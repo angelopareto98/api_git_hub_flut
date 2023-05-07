@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.api_git_hub_flut">
    <application
-        android:label="api_git_hub_flut"
+        android:label="UserGitApp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
