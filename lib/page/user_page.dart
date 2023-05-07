@@ -11,17 +11,20 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   String query = "";
 
-  TextEditingController queryTextEditingController =
-      new TextEditingController();
+  TextEditingController queryTextEditingController = TextEditingController();
   dynamic data;
 
   bool notVisible = false;
+
+  int currentPage = 0;
+  int totalPage = 0;
+  int pageSize = 20;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Users => ${query}"),
+        title: Text("Users => ${query} => ${currentPage}/${totalPage}"),
       ),
       body: Center(
         child: Column(
@@ -62,7 +65,7 @@ class _UserPageState extends State<UserPage> {
                   ),
                   onPressed: () {
                     setState(() {
-                      this.query = queryTextEditingController.text;
+                      query = queryTextEditingController.text;
                       _search(query);
                     });
                   },
@@ -106,13 +109,17 @@ class _UserPageState extends State<UserPage> {
 
   void _search(String query) {
     String url =
-        "https://api.github.com/search/users?q=${query}&per_page=20&page=0";
-
-    print(url);
+        "https://api.github.com/search/users?q=${query}&per_page=${pageSize}&page=${currentPage}";
 
     http.get(Uri.parse(url)).then((response) {
       setState(() {
-        this.data = json.decode(response.body);
+        data = json.decode(response.body);
+
+        if (data['total_count'] % pageSize == 0) {
+          totalPage = data['total_count'] ~/ pageSize;
+        } else {
+          totalPage = (data['total_count'] / pageSize).floor() + 1;
+        }
       });
     }).catchError((onError) {
       print(onError);
