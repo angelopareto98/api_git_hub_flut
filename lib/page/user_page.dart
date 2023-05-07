@@ -20,6 +20,27 @@ class _UserPageState extends State<UserPage> {
   int totalPage = 0;
   int pageSize = 20;
 
+  List<dynamic> itemsList = [];
+
+  ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        setState(() {
+          if (currentPage < totalPage - 1) {
+            currentPage++;
+
+            _search(query);
+          }
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,6 +86,8 @@ class _UserPageState extends State<UserPage> {
                   ),
                   onPressed: () {
                     setState(() {
+                      itemsList = [];
+                      currentPage = 0;
                       query = queryTextEditingController.text;
                       _search(query);
                     });
@@ -74,7 +97,8 @@ class _UserPageState extends State<UserPage> {
             ),
             Expanded(
               child: ListView.builder(
-                  itemCount: (data == null) ? 0 : data["items"].length,
+                  controller: scrollController,
+                  itemCount: itemsList.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Row(
@@ -84,17 +108,17 @@ class _UserPageState extends State<UserPage> {
                             children: [
                               CircleAvatar(
                                 backgroundImage: NetworkImage(
-                                    data['items'][index]['avatar_url']),
+                                    itemsList[index]['avatar_url']),
                                 radius: 35,
                               ),
                               const SizedBox(
                                 width: 20,
                               ),
-                              Text("${data['items'][index]['login']}"),
+                              Text("${itemsList[index]['login']}"),
                             ],
                           ),
                           CircleAvatar(
-                            child: Text("${data['items'][index]['score']}"),
+                            child: Text("${itemsList[index]['score']}"),
                           )
                         ],
                       ),
@@ -114,6 +138,8 @@ class _UserPageState extends State<UserPage> {
     http.get(Uri.parse(url)).then((response) {
       setState(() {
         data = json.decode(response.body);
+
+        itemsList.addAll(data['items']);
 
         if (data['total_count'] % pageSize == 0) {
           totalPage = data['total_count'] ~/ pageSize;
