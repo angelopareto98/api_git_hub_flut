@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class UserPage extends StatefulWidget {
   @override
@@ -10,8 +13,24 @@ class _UserPageState extends State<UserPage> {
 
   TextEditingController queryTextEditingController =
       new TextEditingController();
+  dynamic data;
 
   bool notVisible = false;
+
+  void _search(String query) {
+    String url =
+        "https://api.github.com/search/users?q=${query}&per_page=5&page=0";
+
+    print(url);
+
+    http.get(Uri.parse(url)).then((response) {
+      setState(() {
+        this.data = json.decode(response.body);
+      });
+    }).catchError((onError) {
+      print(onError);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +78,8 @@ class _UserPageState extends State<UserPage> {
                   onPressed: () {
                     setState(() {
                       this.query = queryTextEditingController.text;
+                      _search(query);
                     });
-                    print(query);
                   },
                 )
               ],
