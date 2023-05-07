@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:api_git_hub_flut/page/repository_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -101,6 +102,13 @@ class _UserPageState extends State<UserPage> {
                   itemCount: itemsList.length,
                   itemBuilder: (context, index) {
                     return ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GitRepoPage(
+                                    login: itemsList[index]['login'])));
+                      },
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
