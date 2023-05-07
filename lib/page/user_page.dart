@@ -107,7 +107,9 @@ class _UserPageState extends State<UserPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => GitRepoPage(
-                                    login: itemsList[index]['login'])));
+                                      login: itemsList[index]['login'],
+                                      avatarUrl: itemsList[index]['avatar_url'],
+                                    )));
                       },
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

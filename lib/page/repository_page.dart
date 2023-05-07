@@ -5,8 +5,9 @@ import 'package:http/http.dart' as http;
 
 class GitRepoPage extends StatefulWidget {
   String login;
+  String avatarUrl;
 
-  GitRepoPage({required this.login});
+  GitRepoPage({required this.login, required this.avatarUrl});
 
   @override
   State<GitRepoPage> createState() => _GitRepoPageState();
@@ -38,6 +39,11 @@ class _GitRepoPageState extends State<GitRepoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Repository ${widget.login}"),
+        actions: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(widget.avatarUrl),
+          )
+        ],
       ),
       body: Center(
         child: ListView.separated(
