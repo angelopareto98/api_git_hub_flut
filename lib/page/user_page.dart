@@ -26,6 +26,8 @@ class _UserPageState extends State<UserPage> {
 
   ScrollController scrollController = ScrollController();
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -100,43 +102,46 @@ class _UserPageState extends State<UserPage> {
                   ],
                 )),
             Expanded(
-              child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: itemsList.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GitRepoPage(
-                                      login: itemsList[index]['login'],
-                                      avatarUrl: itemsList[index]['avatar_url'],
-                                    )));
-                      },
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      controller: scrollController,
+                      itemCount: itemsList.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GitRepoPage(
+                                          login: itemsList[index]['login'],
+                                          avatarUrl: itemsList[index]
+                                              ['avatar_url'],
+                                        )));
+                          },
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        itemsList[index]['avatar_url']),
+                                    radius: 35,
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text("${itemsList[index]['login']}"),
+                                ],
+                              ),
                               CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    itemsList[index]['avatar_url']),
-                                radius: 35,
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Text("${itemsList[index]['login']}"),
+                                child: Text("${itemsList[index]['score']}"),
+                              )
                             ],
                           ),
-                          CircleAvatar(
-                            child: Text("${itemsList[index]['score']}"),
-                          )
-                        ],
-                      ),
-                    );
-                  }),
+                        );
+                      }),
             )
           ],
         ),
@@ -145,23 +150,31 @@ class _UserPageState extends State<UserPage> {
   }
 
   void _search(String query) {
+    setState(() {
+      _isLoading = true;
+    });
+
     String url =
         "https://api.github.com/search/users?q=${query}&per_page=${pageSize}&page=${currentPage}";
 
     http.get(Uri.parse(url)).then((response) {
       setState(() {
-        data = json.decode(response.body);
+        if (response.statusCode == 200) {
+          _isLoading = false;
+          data = json.decode(response.body);
 
-        itemsList.addAll(data['items']);
+          itemsList.addAll(data['items']);
 
-        if (data['total_count'] % pageSize == 0) {
-          totalPage = data['total_count'] ~/ pageSize;
-        } else {
-          totalPage = (data['total_count'] / pageSize).floor() + 1;
+          if (data['total_count'] % pageSize == 0) {
+            totalPage = data['total_count'] ~/ pageSize;
+          } else {
+            totalPage = (data['total_count'] / pageSize).floor() + 1;
+          }
         }
       });
     }).catchError((onError) {
       print(onError);
+      _isLoading = false;
     });
   }
 }

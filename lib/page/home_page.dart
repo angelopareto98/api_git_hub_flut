@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
                 child: Container(
                   margin: const EdgeInsets.only(top: 30, bottom: 20),
                   child: Text(
-                    "This is a small application using api github to search all user in git, and listing all repo public of the user searched",
+                    "This is a small application using api github to search all user in git, and listing all repo public of this user searched",
                     textAlign: TextAlign.center,
                     style:
                         GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
