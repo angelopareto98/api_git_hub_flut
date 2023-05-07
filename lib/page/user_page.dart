@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:api_git_hub_flut/animation/global_animation.dart';
 import 'package:api_git_hub_flut/page/repository_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -51,51 +52,53 @@ class _UserPageState extends State<UserPage> {
       body: Center(
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                    child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: queryTextEditingController,
-                    obscureText: notVisible,
-                    decoration: InputDecoration(
-                        labelText: "username github",
-                        fillColor: Colors.green,
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              notVisible = !notVisible;
-                            });
-                          },
-                          icon: Icon(!notVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          color: Colors.green,
-                        ),
-                        contentPadding: const EdgeInsets.only(left: 20),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50),
-                            borderSide: const BorderSide(
-                                width: 1, color: Colors.green))),
-                  ),
+            DelayedAnimation(
+                delay: 1000,
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: TextFormField(
+                        controller: queryTextEditingController,
+                        obscureText: notVisible,
+                        decoration: InputDecoration(
+                            labelText: "username github",
+                            fillColor: Colors.green,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  notVisible = !notVisible;
+                                });
+                              },
+                              icon: Icon(!notVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              color: Colors.green,
+                            ),
+                            contentPadding: const EdgeInsets.only(left: 20),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50),
+                                borderSide: const BorderSide(
+                                    width: 1, color: Colors.green))),
+                      ),
+                    )),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.search,
+                        color: Colors.green,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          itemsList = [];
+                          currentPage = 0;
+                          query = queryTextEditingController.text;
+                          _search(query);
+                        });
+                      },
+                    )
+                  ],
                 )),
-                IconButton(
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.green,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      itemsList = [];
-                      currentPage = 0;
-                      query = queryTextEditingController.text;
-                      _search(query);
-                    });
-                  },
-                )
-              ],
-            ),
             Expanded(
               child: ListView.builder(
                   controller: scrollController,
