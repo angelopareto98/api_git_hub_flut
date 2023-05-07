@@ -17,21 +17,6 @@ class _UserPageState extends State<UserPage> {
 
   bool notVisible = false;
 
-  void _search(String query) {
-    String url =
-        "https://api.github.com/search/users?q=${query}&per_page=5&page=0";
-
-    print(url);
-
-    http.get(Uri.parse(url)).then((response) {
-      setState(() {
-        this.data = json.decode(response.body);
-      });
-    }).catchError((onError) {
-      print(onError);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,10 +68,54 @@ class _UserPageState extends State<UserPage> {
                   },
                 )
               ],
+            ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: (data == null) ? 0 : data["items"].length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    data['items'][index]['avatar_url']),
+                                radius: 35,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Text("${data['items'][index]['login']}"),
+                            ],
+                          ),
+                          CircleAvatar(
+                            child: Text("${data['items'][index]['score']}"),
+                          )
+                        ],
+                      ),
+                    );
+                  }),
             )
           ],
         ),
       ),
     );
+  }
+
+  void _search(String query) {
+    String url =
+        "https://api.github.com/search/users?q=${query}&per_page=20&page=0";
+
+    print(url);
+
+    http.get(Uri.parse(url)).then((response) {
+      setState(() {
+        this.data = json.decode(response.body);
+      });
+    }).catchError((onError) {
+      print(onError);
+    });
   }
 }
